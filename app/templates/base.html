@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Приложение QR-кодов{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style/style.css">
+    <link rel="icon" type="image/png" href="/static/img/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/static/img/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="/static/img/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/img/favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="/static/img/favicon/site.webmanifest" />
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/easyqrcodejs@4.4.13/dist/easy.qrcode.min.js"></script>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready()
+    </script>
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+    <main>
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+
+        <nav class="nav-bar">
+            <a href="/scan" class="nav-item {% if active_tab == 'scan' %}active{% endif %}">
+                <img src="/static/img/scan.svg" alt="Сканировать" class="nav-icon">
+                Сканировать
+            </a>
+        </nav>
+        {% block extra_scripts %}{% endblock %}
+    </main>
+</body>
+
+</html>
