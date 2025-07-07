@@ -28,7 +28,7 @@ class Config:
     db: DataBase
 
     def get_webhook_url(self) -> str:
-        return f"{self.tg_bot.url}/bot"
+        return f"{self.tg_bot.url}/bot/"
 
 
 def load_config(path: str | None = None) -> Config:
