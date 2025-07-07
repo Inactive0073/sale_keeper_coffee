@@ -1,13 +1,13 @@
 services:
   app:
-    container_name: app
+    container_name: coffee_app
     build:
       context: .
       dockerfile: Dockerfile
     depends_on:
       - nats
       - postgres
-    restart: "unless-stopped"  # перезапуск во время ошибок
+    restart: "unless-stopped"
     ports:
       - "127.0.0.1:8001:8000"
     volumes:
@@ -16,17 +16,17 @@ services:
       - app_network
 
   nats:
-    container_name: nats
+    container_name: coffee_nats
     image: nats:2.10
-    entrypoint: /nats-server # Команда запуска внутри контейнера
+    entrypoint: /nats-server
     command: "-c /config/server.conf"
     ports:
-      - "127.0.0.1:4223:4222"  # Основной порт для взаимодействия с сервером
-      - "127.0.0.1:8223:8222"  # Порт для мониторинга сервера по HTTP (понадобится позже)
+      - "127.0.0.1:4223:4222"
+      - "127.0.0.1:8223:8222"
     volumes:
-      - ./nats/data:/data  # Путь, по которому NATS-сервер будет хранить данные вне контейнера
+      - ./nats/data:/data
       - ./nats/config/server.conf:/config/server.conf
-    restart: "unless-stopped"  # перезапуск во время ошибок
+    restart: "unless-stopped"
     logging:
       driver: "json-file"
       options:
@@ -34,13 +34,13 @@ services:
         max-file: "5"
     networks:
       - app_network
-  
+
   nats-ui:
-    container_name: nats-nui
+    container_name: coffee_nats_nui
     image: ghcr.io/nats-nui/nui:latest
     ports:
-      - "127.0.0.1:31312:31311" # Порты для доступа к NATS NUI
-    restart: "unless-stopped"  # перезапуск во время ошибок
+      - "127.0.0.1:31312:31311"
+    restart: "unless-stopped"
     volumes:
       - ./nui/db:/db
     depends_on:
@@ -49,10 +49,10 @@ services:
       - app_network
 
   postgres:
-    container_name: postgres
+    container_name: coffee_postgres
     image: postgres:17-alpine
     env_file: .env
-    restart: "unless-stopped"  # перезапуск во время ошибок
+    restart: "unless-stopped"
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -76,7 +76,7 @@ services:
       - "postgres-data:/var/lib/postgresql/data"
 
   pgadmin:
-    container_name: pgadmin
+    container_name: coffee_pgadmin
     image: dpage/pgadmin4:9
     restart: "unless-stopped"
     env_file: .env
@@ -99,13 +99,13 @@ services:
       - app_network
 
   taskiq_worker:
-    container_name: taskiq_worker
+    container_name: coffee_taskiq_worker
     build:
       context: .
       dockerfile: Dockerfile
     command: ["taskiq", "worker", "app.taskiq_broker.broker:broker", "-fsd", "--workers=1", "--max-fails=5"]
     env_file: .env
-    restart: "unless-stopped"  # перезапуск во время ошибок
+    restart: "unless-stopped"
     volumes:
       - .:/app
     depends_on:
@@ -114,13 +114,13 @@ services:
       - app_network
 
   taskiq_scheduler:
-    container_name: taskiq_scheduler
+    container_name: coffee_taskiq_scheduler
     build: .
     command: ["taskiq", "scheduler", "app.taskiq_broker.broker:scheduler", "-fsd"]
     env_file: .env
     volumes:
       - .:/app
-    restart: "unless-stopped"  # перезапуск во время ошибок
+    restart: "unless-stopped"
     depends_on:
       - taskiq_worker
       - nats
