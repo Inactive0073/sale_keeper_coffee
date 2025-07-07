@@ -13,7 +13,7 @@ services:
     volumes:
       - .:/app
     networks:
-      coffee_app_network
+      - coffee_app_network
 
   nats:
     container_name: coffee_nats
@@ -33,7 +33,7 @@ services:
         max-size: "30m"
         max-file: "5"
     networks:
-      coffee_app_network
+      - coffee_app_network
 
   nats-ui:
     container_name: coffee_nats_nui
@@ -46,7 +46,7 @@ services:
     depends_on:
       - nats
     networks:
-      coffee_app_network
+      - coffee_app_network
 
   postgres:
     container_name: coffee_postgres
@@ -71,7 +71,7 @@ services:
         max-file: "5"
         compress: "true"
     networks:
-      coffee_app_network
+      - coffee_app_network
     volumes:
       - "postgres-data:/var/lib/postgresql/data"
 
@@ -96,7 +96,7 @@ services:
         max-size: "30m"
         max-file: "5"
     networks:
-      coffee_app_network
+      - coffee_app_network
 
   taskiq_worker:
     container_name: coffee_taskiq_worker
@@ -111,7 +111,7 @@ services:
     depends_on:
       - nats
     networks:
-      coffee_app_network
+      - coffee_app_network
 
   taskiq_scheduler:
     container_name: coffee_taskiq_scheduler
@@ -125,7 +125,7 @@ services:
       - taskiq_worker
       - nats
     networks:
-      coffee_app_network
+      - coffee_app_network
 
 volumes:
   postgres-data:
