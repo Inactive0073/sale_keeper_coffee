@@ -69,7 +69,7 @@ async def lifespan(app: FastAPI):
     logger.info("Connection to NATS closed")
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, root_path="/bot")
 
 
 @app.post("/bot")
