@@ -75,5 +75,7 @@ async def get_processing_guest_data(
         "add_bonus_button": i18n.waiter.processing.add.bonus(),
         "subtract_bonus_button": i18n.waiter.processing.subtract.bonus(),
         "adding_instruction": i18n.waiter.processing.adding.bonus.instruction(),
-        "subtracting_instruction": i18n.waiter.processing.subtracting.instruction(),
+        "subtracting_validation_instruction": i18n.waiter.processing.subtracting.instruction(),
+        "subtracting_approve_instruction": i18n.waiter.approve.subtract.msg(),
+        "repeat_code_msg": i18n.waiter.repeat.code.msg()
     }

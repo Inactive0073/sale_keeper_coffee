@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import logging
 from sqlalchemy import select, update, func, case, and_
 from sqlalchemy.dialects.postgresql import insert as upsert, insert
@@ -118,7 +118,7 @@ async def get_bonus_info(
             - date_expire: ближайшая дата истечения баллов или None
             - bonus_to_expire: сумма баллов, истекающих в ближайшую дату
     """
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
     min_expire_subquery = (
         select(func.coalesce(func.min(Bonus.expire_date), now + timedelta(weeks=52)))
         .where(
@@ -136,7 +136,11 @@ async def get_bonus_info(
         func.sum(
             case((Bonus.expire_date == min_expire_subquery, Bonus.amount), else_=0)
         ).label("bonus_to_expire"),
-    ).where(Bonus.customer_id == telegram_id)
+    ).where(
+        Bonus.customer_id == telegram_id,
+        Bonus.expire_date > now,
+        Bonus.amount != 0
+    )
 
     result = await session.execute(stmt)
     row = result.one_or_none()
@@ -144,7 +148,7 @@ async def get_bonus_info(
     if row:
         total_points, nearest_expiration_date, bonus_to_expire = row
         # Если nearest_expiration_date равна now + 52 недели, значит нет будущих истечений
-        if nearest_expiration_date.date() == (now + timedelta(weeks=52)).date():
+        if nearest_expiration_date and nearest_expiration_date.date() == (now + timedelta(weeks=52)).date():
             nearest_expiration_date = None
         return (
             int(total_points or 0),

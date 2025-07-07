@@ -89,7 +89,7 @@ async def get_start_setting_tz_data(
 
     return {
         "settings_select_timezone_message": i18n.settings.select.timezone(
-            current_timezone=user_timezone, local_datetime=user_time
+            current_timezone=user_timezone or "Unknown", local_datetime=user_time
         ),
         "timezones": tz_buttons,
     }

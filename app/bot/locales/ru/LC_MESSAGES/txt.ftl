@@ -116,7 +116,7 @@ customer-loyalty-link = https://www.surfcoffee.ru/loyalty
 customer-partnership-info-message = Хотите стать партнёром? Пишите нам: <a href="mailto:partnership@surfcoffee.ru">partnership@surfcoffee.ru</a>
 
 # About (Our Spots)
-customer-about-info-message = Surf Coffee x SUNDAY — уютный спот в духе мини‑лофта с панорамным светом, живыми растениями и круассанами, как в Париже. :contentReference[oaicite:1]{index=1}
+customer-about-info-message = Surf Coffee x SUNDAY — уютный спот в духе мини‑лофта с панорамным светом, живыми растениями и круассанами, как в Париже.
 customer-about-message-menu = Посмотреть меню
 customer-about-link-menu = https://www.surfcoffee.ru/sunday#menu
 customer-about-message-take = Забронировать стол
@@ -151,12 +151,12 @@ waiter-hello-message =
 
 # Инструкция
 waiter-pagination-message = Страница {$current_page} из {$pages}.
-waiter-instruction-message-1 = Нажмите кнопку <b>Сканировать</b>. После открытия разрешите доступ к камере и нажмите <b>Start Scanning</b>. 
-waiter-instruction-message-2 = Сканирование происходит достаточно быстро. Если увидели белый экран — пролистните страницу вниз, и отправьте его в Telegram по кнопке <b>Отправить в Telegram</b> или скопируйте и отправьте код боту вручную.
-waiter-instruction-message-3 = Если отправляли код в телеграм по кнопке, то можете пропустить этот шаг.
+waiter-instruction-message-1 = Напишите номер телефона абонента без специальных символов, только цифры. 
+waiter-instruction-message-2 = Вы получите базовую информацию о пользователе и его балансе.
+waiter-instruction-message-3 = При попытке начисления баллов просто укажите итоговую сумму чека гостя. Рассчеты и запись в журнал произойдет автоматически. 
+waiter-instruction-message-4 = При попытке списания гостю поступит сообщение с кодом, которое вы должны ввести на своем устройстве и отправить его боту. 
 
-    Иначе, закройте попап окно и сделайте свайп мини аппа вниз.
-waiter-instruction-message-4 = Отправьте сообщение с кодом без пробелов и других символов (только для ручной вставки).
+    <i>Если сообщение не поступает, убедитесь, что пользователь зарегистрирован в системе и он не заблокировал бота (<b>если бот был заблокирован гостем, то он не получит код</b>)</i>.
 waiter-instruction-message-5 = В ответ вы получите информацию по пользователю, а также доступ к окну работы с клиентом.
 waiter-instruction-message-6 = Далее необходимо ввести итоговую сумму чека клиента. Все необходимые рассчеты будут произведены автоматически. 
 
@@ -181,6 +181,11 @@ waiter-success-info-customer = Данные по пользователю усп
 waiter-invalid-info-customer = Нет данных по пользователю. Проверьте правильность номера телефона.
 
 # Работа с чеком
+waiter-repeat-code-msg = Отправить код еще раз.
+waiter-approve-subtract-msg = Введите код, отправленный клиенту.
+waiter-to-client-msg = Ваш код: <b><i>{$code}</i></b>
+waiter-invalid-code-msg = Неверный код, проверьте правильность и попробуйте еще раз.
+
 waiter-processing-instruction = <b>РАБОТА С КЛИЕНТОМ</b>
 
         Для начисления: <b>➕Начисить бонусы</b>

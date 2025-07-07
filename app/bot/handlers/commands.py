@@ -34,7 +34,8 @@ async def process_start_command(
         f"Пользователь {first_name}|{username} с ролями {roles}, нажал кнопку /start"
     )
     if not roles.intersection({"admin", "manager", "waiter", "owner"}):
-        if not (await get_customer_detail_info(session, telegram_id)):
+        customer = await get_customer_detail_info(session, telegram_id=telegram_id)
+        if not customer.birthday:
             logger.debug(f"Проверка {telegram_id} пройдена успешно!")
             await upsert_customer(
                 session=session,
