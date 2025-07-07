@@ -12,8 +12,8 @@ class User(TimestampMixin, TelegramProfileMixin, Base):
     timezone_offset: Mapped[int] = mapped_column(
         SmallInteger, default=3, server_default=text("3"), nullable=True
     )
-    timezone: Mapped[int] = mapped_column(
-        String, default="Europe/Moscow", nullable=True
+    timezone: Mapped[str] = mapped_column(
+        String, default="Europe/Moscow", server_default="Europe/Moscow", nullable=True
     )
     managed_channels: Mapped[list["TgChannel"]] = relationship(  # type: ignore
         secondary="user_channels", back_populates="admins", lazy="dynamic"

@@ -24,6 +24,7 @@ from .handlers import (
     process_invalid_number,
     process_adding_bonus,
     process_subtract_bonus,
+    process_validate_balance,
 )
 from .constants import ID_STUB_SCROLL
 
@@ -59,7 +60,7 @@ waiter_dialog = Dialog(
             SwitchTo(
                 Format("{subtract_bonus_button}"),
                 id="on_subtract_selected",
-                state=WaiterSG.subtracting,
+                state=WaiterSG.validating,
                 when=F["dialog_data"]["has_bonus"],
             ),
             width=2,
@@ -77,13 +78,25 @@ waiter_dialog = Dialog(
         getter=get_processing_guest_data,
     ),
     Window(
-        Format("{subtracting_instruction}"),
+        Format("{subtracting_validation_instruction}"),
+        TextInput(
+            id="subtracting_bonus_amount",
+            type_factory=int,
+            on_success=process_validate_balance,
+        ),
+        SwitchTo(Format("{back}"), id="__back__", state=WaiterSG.start),
+        state=WaiterSG.validating,
+        getter=get_processing_guest_data,
+    ),
+    Window(
+        Format("{subtracting_approve_instruction}"),
         TextInput(
             id="subtracting_bonus_amount",
             type_factory=int,
             on_success=process_subtract_bonus,
         ),
-        SwitchTo(Format("{back}"), id="__back__", state=WaiterSG.start),
+        SwitchTo(Format("{repeat_code_msg}"), id="__back__", state=WaiterSG.validating),
+        SwitchTo(Format("{back}"), id="__back__", state=WaiterSG.validating),
         state=WaiterSG.subtracting,
         getter=get_processing_guest_data,
     ),
