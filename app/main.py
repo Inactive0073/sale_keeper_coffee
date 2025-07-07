@@ -72,7 +72,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan, root_path="/bot")
 
 
-@app.post("/bot")
+@app.post("/")
 async def webhook(request: Request) -> None:
     update = Update.model_validate(await request.json(), context={"bot": bot})
     await dp.feed_update(bot, update)
