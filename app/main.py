@@ -69,10 +69,10 @@ async def lifespan(app: FastAPI):
     logger.info("Connection to NATS closed")
 
 
-app = FastAPI(lifespan=lifespan, root_path="/bot")
+app = FastAPI(lifespan=lifespan)
 
 
-@app.post("/")
+@app.post("/bot/")
 async def webhook(request: Request) -> None:
     update = Update.model_validate(await request.json(), context={"bot": bot})
     await dp.feed_update(bot, update)
