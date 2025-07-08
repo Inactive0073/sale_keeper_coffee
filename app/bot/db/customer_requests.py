@@ -107,55 +107,39 @@ async def record_personal_user_data(
         return False
 
 
-async def get_bonus_info(
-    session: AsyncSession, telegram_id: int
-) -> tuple[int, datetime | None, int]:
-    """Возвращает баланс бонусов пользователя
-
-    Returns:
-        Tuple[summary_bonus, date_expire, bonus_to_expire]:
-            - summary_bonus: общий баланс бонусов
-            - date_expire: ближайшая дата истечения баллов или None
-            - bonus_to_expire: сумма баллов, истекающих в ближайшую дату
-    """
+async def get_bonus_info(session: AsyncSession, telegram_id: int) -> tuple[int, datetime | None, int]:
     now = datetime.now(timezone.utc)
-    min_expire_subquery = (
-        select(func.coalesce(func.min(Bonus.expire_date), now + timedelta(weeks=52)))
-        .where(
-            and_(
-                Bonus.customer_id == telegram_id,
-                Bonus.expire_date > now,
-                Bonus.amount != 0,
-            )
-        )
-        .scalar_subquery()
-    )
-    stmt = select(
-        func.sum(Bonus.amount).label("total_points"),
-        min_expire_subquery.label("nearest_expiration_date"),
-        func.sum(
-            case((Bonus.expire_date == min_expire_subquery, Bonus.amount), else_=0)
-        ).label("bonus_to_expire"),
-    ).where(
+
+    # Сумма всех активных бонусов
+    total_stmt = select(func.sum(Bonus.amount)).where(
         Bonus.customer_id == telegram_id,
         Bonus.expire_date > now,
         Bonus.amount != 0
     )
+    total_result = await session.execute(total_stmt)
+    total_points = total_result.scalar() or 0
 
-    result = await session.execute(stmt)
-    row = result.one_or_none()
+    # Ближайшая дата истечения
+    min_expire_stmt = select(func.min(Bonus.expire_date)).where(
+        Bonus.customer_id == telegram_id,
+        Bonus.expire_date > now,
+        Bonus.amount != 0
+    )
+    min_expire_result = await session.execute(min_expire_stmt)
+    nearest_expiration_date = min_expire_result.scalar()
 
-    if row:
-        total_points, nearest_expiration_date, bonus_to_expire = row
-        # Если nearest_expiration_date равна now + 52 недели, значит нет будущих истечений
-        if nearest_expiration_date and nearest_expiration_date.date() == (now + timedelta(weeks=52)).date():
-            nearest_expiration_date = None
-        return (
-            int(total_points or 0),
-            nearest_expiration_date,
-            int(bonus_to_expire or 0),
+    # Сумма бонусов на ближайшую дату (если такая дата есть)
+    bonus_to_expire = 0
+    if nearest_expiration_date:
+        bonus_expire_stmt = select(func.sum(Bonus.amount)).where(
+            Bonus.customer_id == telegram_id,
+            Bonus.expire_date == nearest_expiration_date,
+            Bonus.amount != 0
         )
-    return None
+        bonus_expire_result = await session.execute(bonus_expire_stmt)
+        bonus_to_expire = bonus_expire_result.scalar() or 0
+
+    return int(total_points), nearest_expiration_date, int(bonus_to_expire)
 
 
 async def get_customer_detail_info(

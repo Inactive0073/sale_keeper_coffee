@@ -86,7 +86,7 @@ services:
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
     volumes:
-      - "pgadmin-data:/var/lib/pgadmin"
+      - ".pgadmin-data:/var/lib/pgadmin"
     depends_on:
       postgres:
         condition: service_healthy

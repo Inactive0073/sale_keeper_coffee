@@ -21,7 +21,7 @@ from app.bot.db.customer_requests import (
     get_customer_detail_info,
 )
 from .keyboards import get_kb
-from .services import convert_media_to_group
+from .services import convert_media_to_group, normalize_phone_number
 
 if TYPE_CHECKING:
     from locales.stub import TranslatorRunner  # type: ignore
@@ -117,7 +117,7 @@ async def process_gender_selected(
     telegram_id = callback.from_user.id
     name = dialog_manager.dialog_data.get("name")
     surname = dialog_manager.dialog_data.get("surname")
-    phone = dialog_manager.dialog_data.get("phone")
+    phone = normalize_phone_number(dialog_manager.dialog_data.get("phone"))
     email = dialog_manager.dialog_data.get("email")
     birthday = dialog_manager.dialog_data.get("birthday")
     gender = dialog_manager.dialog_data.get("gender", "N")[0]

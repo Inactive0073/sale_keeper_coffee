@@ -39,8 +39,8 @@ async def process_phone_number(
     i18n: TranslatorRunner = dialog_manager.middleware_data.get("i18n")
     session = dialog_manager.middleware_data.get("session")
     
-    phone_number = f"+7{phone_number[1:]}" if phone_number.startswith(("8", "7")) else phone_number
-    logger.info(f"User {phone_number=} has started number verify")
+    phone_number = phone_number
+    logger.info(f"Ищем номер: {phone_number}")
 
     customer: Customer = await get_customer_detail_info(
         session=session, phone=phone_number
@@ -65,6 +65,7 @@ async def process_phone_number(
         await dialog_manager.switch_to(WaiterSG.processing)
     else:
         text = i18n.waiter.invalid.info.customer()
+        logger.info(f"Номер не найден: {phone_number}")
         await message.answer(text=text)
         return
 
