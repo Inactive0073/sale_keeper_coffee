@@ -18,6 +18,7 @@ from app.bot.db.customer_requests import (
 from ...states.waiter.start import WaiterSG
 import logging
 import json
+from .services import normalize_phone_number
 
 if TYPE_CHECKING:
     from locales.stub import TranslatorRunner  # type: ignore
@@ -39,7 +40,7 @@ async def process_phone_number(
     i18n: TranslatorRunner = dialog_manager.middleware_data.get("i18n")
     session = dialog_manager.middleware_data.get("session")
     
-    phone_number = phone_number
+    phone_number = normalize_phone_number(phone_number)
     logger.info(f"Ищем номер: {phone_number}")
 
     customer: Customer = await get_customer_detail_info(
