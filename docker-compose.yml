@@ -73,7 +73,7 @@ services:
     networks:
       - coffee_app_network
     volumes:
-      - ".postgres-data:/var/lib/postgresql/data"
+      - "postgres-data:/var/lib/postgresql/data"
 
   pgadmin:
     container_name: coffee_pgadmin
@@ -86,7 +86,7 @@ services:
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
     volumes:
-      - ".pgadmin-data:/var/lib/pgadmin"
+      - "pgadmin:/var/lib/pgadmin"
     depends_on:
       postgres:
         condition: service_healthy
@@ -130,3 +130,7 @@ services:
 networks:
   coffee_app_network:
     name: coffee_app_network
+
+volumes:
+  postgres-data:
+  pgadmin:
