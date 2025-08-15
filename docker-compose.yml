@@ -35,19 +35,6 @@ services:
     networks:
       - coffee_app_network
 
-  nats-ui:
-    container_name: coffee_nats_nui
-    image: ghcr.io/nats-nui/nui:latest
-    ports:
-      - "127.0.0.1:31312:31311"
-    restart: "unless-stopped"
-    volumes:
-      - ./nui/db:/db
-    depends_on:
-      - nats
-    networks:
-      - coffee_app_network
-
   postgres:
     container_name: coffee_postgres
     image: postgres:17-alpine
@@ -126,6 +113,36 @@ services:
       - nats
     networks:
       - coffee_app_network
+
+  clickhouse:
+    image: clickhouse:25.7.4.11
+    ports: 
+      - "8123:8123" # HTTP Interface
+      - "9000:9000" # Web Interface
+    env_file: .env
+    environment:
+      - CLICKHOUSE_USER=${CLICKHOUSE_USER}
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
+      - CLICKHOUSE_LOG_LEVEL=${CLICKHOUSE_LOG_LEVEL}
+    healthcheck:
+      test: ["CMD-SHELL", "clickhouse-client -u ${CLICKHOUSE_USER} --password ${CLICKHOUSE_PASSWORD} -q 'SELECT 1'" ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - ./clickhouse/data:/var/lib/clickhouse
+      - ./clickhouse/config/http.xml:/etc/clickhouse-server/config.d/http.xml
+      - ./clickhouse/config/z_log_disable.xml:/etc/clickhouse-server/config.d/z_log_disable.xml
+      - ./clickhouse/config/z_log_queries.xml:/etc/clickhouse-server/users.d/z_log_queries.xml
+      - ./clickhouse/logs:/var/log
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - coffee_app_network
+
 
 networks:
   coffee_app_network:
