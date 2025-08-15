@@ -179,6 +179,8 @@ nats/data
 nui/
 postgres-data/
 pgadmin-data/
+.postgres-data/
+.pgadmin-data
 example
 
 # Логи
