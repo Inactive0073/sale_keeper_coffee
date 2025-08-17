@@ -14,6 +14,14 @@ class TgBot:
 class NatsConfig:
     servers: List[str]
 
+@dataclass
+class Clickhouse:
+    host: str = "clickhouse"
+    username: str
+    password: str
+    db: str
+    port: int = 8123
+
 
 @dataclass
 class DataBase:
@@ -26,7 +34,7 @@ class Config:
     tg_bot: TgBot
     nats: NatsConfig
     db: DataBase
-
+    clickhouse: Clickhouse
     def get_webhook_url(self) -> str:
         return f"{self.tg_bot.url}/bot/"
 
@@ -38,4 +46,5 @@ def load_config(path: str | None = None) -> Config:
         tg_bot=TgBot(token=env("BOT_TOKEN"), url=env("BOT_WEBHOOK_URL")),
         nats=NatsConfig(servers=env.list("NATS_SERVERS")),
         db=DataBase(dsn=env("DSN"), is_echo=env.bool(("IS_ECHO"))),
+        clickhouse=Clickhouse(username=env("CLICKHOUSE_USER"), password=env("CLICKHOUSE_PASSWORD"))
     )
