@@ -16,10 +16,10 @@ class NatsConfig:
 
 @dataclass
 class Clickhouse:
-    host: str = "clickhouse"
     username: str
     password: str
     db: str
+    host: str = "clickhouse"
     port: int = 8123
 
 
@@ -46,5 +46,5 @@ def load_config(path: str | None = None) -> Config:
         tg_bot=TgBot(token=env("BOT_TOKEN"), url=env("BOT_WEBHOOK_URL")),
         nats=NatsConfig(servers=env.list("NATS_SERVERS")),
         db=DataBase(dsn=env("DSN"), is_echo=env.bool(("IS_ECHO"))),
-        clickhouse=Clickhouse(username=env("CLICKHOUSE_USER"), password=env("CLICKHOUSE_PASSWORD"))
+        clickhouse=Clickhouse(username=env("CLICKHOUSE_USER"), password=env("CLICKHOUSE_PASSWORD"), db=env("CLICKHOUSE_DB"))
     )
