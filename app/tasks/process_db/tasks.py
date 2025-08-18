@@ -35,7 +35,7 @@ async def insert_from_psql_to_clickhouse():
 
     conn: asyncpg.Connection = await asyncpg.connect(
         host="coffee_postgres",
-        port=5433,
+        port=5432,
         user=config.clickhouse.username,
         password=config.clickhouse.password,
         database="db_in_psg"
