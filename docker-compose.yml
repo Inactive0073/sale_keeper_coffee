@@ -125,6 +125,7 @@ services:
       - CLICKHOUSE_USER=${CLICKHOUSE_USER}
       - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
       - CLICKHOUSE_LOG_LEVEL=${CLICKHOUSE_LOG_LEVEL}
+    restart: "unless-stopped"
     healthcheck:
       test: ["CMD-SHELL", "clickhouse-client -u ${CLICKHOUSE_USER} --password ${CLICKHOUSE_PASSWORD} -q 'SELECT 1'" ]
       interval: 5s
@@ -143,6 +144,30 @@ services:
         max-file: "3"
     networks:
       - coffee_app_network
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:12.1.1
+    ports: 
+      - "3000:3000"
+    env_file: .env
+    environment: 
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
+    restart: "unless-stopped"
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    volumes:
+      - ./grafana/data:/var/lib/grafana
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - coffee_app_network
+
 
 
 networks:

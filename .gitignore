@@ -182,7 +182,9 @@ pgadmin-data/
 .postgres-data/
 .pgadmin-data
 example
-clickhouse/config
+clickhouse/data
+clickhouse/logs
+grafana/data
 
 # Логи
 *.log

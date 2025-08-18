@@ -34,7 +34,7 @@ async def insert_from_psql_to_clickhouse():
     logger.info(f"Последний {last_id=} для выборки")
 
     conn: asyncpg.Connection = await asyncpg.connect(
-        host="postgresql",
+        host="coffee_postgres",
         port=5433,
         user=config.clickhouse.username,
         password=config.clickhouse.password,
