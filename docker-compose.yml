@@ -169,7 +169,37 @@ services:
     networks:
       - coffee_app_network
 
-
+  metabase:
+    container_name: metabase
+    image: metabase/metabase:v0.56.2.3
+    env_file:
+      - .env
+    environment:
+      - MB_DB_TYPE=${MB_DB_TYPE}
+      - MB_DB_DBNAME=${MB_DB_DBNAME}
+      - MB_DB_PORT=${MB_DB_PORT}
+      - MB_DB_USER=${MB_DB_USER}
+      - MB_DB_PASS=${MB_DB_PASS}
+      - MB_DB_HOST=${MB_DB_HOST}
+    volumes:
+      - ./metabase/dev/urandom:/dev/random:ro
+      - ./metabase/plugins:/plugins
+    restart: "unless-stopped"
+    healthcheck:
+      test: curl --fail -I http://localhost:3000/api/health || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    ports:
+      - "3000:3000"
 
 networks:
   coffee_app_network:
