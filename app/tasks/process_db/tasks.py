@@ -20,6 +20,7 @@ engine = create_async_engine(url=config.db.dsn, echo=config.db.is_echo)
 
 @broker.task(task_name="insert_from_psql_to_clickhouse", schedule=[{"cron": "5 * * * *"}])
 async def insert_from_psql_to_clickhouse():
+    """Тестовая функция для MRE примера"""
     client = clickhouse_connect.get_client(
         host=config.clickhouse.host,
         username=config.clickhouse.username,
@@ -32,7 +33,13 @@ async def insert_from_psql_to_clickhouse():
     last_id = client.query("SELECT max(last_sale_id) FROM date_offsets").first_item or 0
     logger.info(f"Последний {last_id=} для выборки")
 
-    conn: asyncpg.Connection = await asyncpg.connect(config.db.dsn)
+    conn: asyncpg.Connection = await asyncpg.connect(
+        host="postgresql",
+        port=5433,
+        user=config.clickhouse.username,
+        password=config.clickhouse.password,
+        database="db_in_psg"
+    )
     sales_rows: list[asyncpg.Record] = await conn.fetch("""
         SELECT id, store_id, sale_date, product_category, product_name, quantity, price
         FROM sales
@@ -58,7 +65,7 @@ async def insert_from_psql_to_clickhouse():
     last_id_offset = data[-1][0]
     client.insert(
         table="date_offsets",
-        data=(1, last_id_offset),
+        data=[(1, last_id_offset)],
         column_names=["offset_id", "last_sale_id"]
     )
 
