@@ -183,7 +183,6 @@ services:
       - MB_DB_HOST=${MB_DB_HOST}
     volumes:
       - ./metabase/dev/urandom:/dev/random:ro
-      - ./metabase/plugins:/plugins
     restart: "unless-stopped"
     healthcheck:
       test: curl --fail -I http://localhost:3000/api/health || exit 1
