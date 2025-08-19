@@ -136,7 +136,6 @@ services:
       - ./clickhouse/config/http.xml:/etc/clickhouse-server/config.d/http.xml
       - ./clickhouse/config/z_log_disable.xml:/etc/clickhouse-server/config.d/z_log_disable.xml
       - ./clickhouse/config/z_log_queries.xml:/etc/clickhouse-server/users.d/z_log_queries.xml
-      - ./clickhouse/config/users.xml:/etc/clickhouse-server/users.xml
       - ./clickhouse/logs:/var/log
     logging:
       driver: "json-file"
