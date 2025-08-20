@@ -18,58 +18,6 @@ config: Config = load_config()
 engine = create_async_engine(url=config.db.dsn, echo=config.db.is_echo)
 
 
-@broker.task(task_name="insert_from_psql_to_clickhouse", schedule=[{"cron": "5 * * * *"}])
-async def insert_from_psql_to_clickhouse():
-    """Тестовая функция для MRE примера"""
-    client = clickhouse_connect.get_client(
-        host=config.clickhouse.host,
-        username=config.clickhouse.username,
-        password=config.clickhouse.password,
-        database=config.clickhouse.db,
-        port=config.clickhouse.port
-    )
-
-    # Забираем последний id-шник, чтобы фильтровать сдвиг продаж по нему
-    last_id = client.query("SELECT max(last_sale_id) FROM date_offsets").first_item or 0
-    logger.info(f"Последний {last_id=} для выборки")
-
-    conn: asyncpg.Connection = await asyncpg.connect(
-        host="coffee_postgres",
-        port=5432,
-        user=config.clickhouse.username,
-        password=config.clickhouse.password,
-        database="db_in_psg"
-    )
-    sales_rows: list[asyncpg.Record] = await conn.fetch("""
-        SELECT id, store_id, sale_date, product_category, product_name, quantity, price
-        FROM sales
-        WHERE id > $1
-        ORDER BY id ASC
-    """, last_id)
-    await conn.close()
-    
-    if not sales_rows:
-        return "Нет новых данных"
-    
-
-    data = [tuple(r.values()) for r in sales_rows]
-
-    # Вставка данных в клик
-    client.insert(
-        "local_sales",
-        data,
-        column_names=["id", "store_id", "sale_date", "product_category", "product_name", "quantity", "price"]
-    )
-    
-    # Обновление offset
-    last_id_offset = data[-1][0]
-    client.insert(
-        table="date_offsets",
-        data=[(1, last_id_offset)],
-        column_names=["offset_id", "last_sale_id"]
-    )
-
-
 @broker.task(
     task_name="delete_old_or_empty_bonus", schedule=[{"cron": "0 4 * * *"}]
 )  # запуск ежедневно в 4:00
